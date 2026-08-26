@@ -2909,6 +2909,59 @@ fn ui() {
     dylint_testing::ui_test(env!("CARGO_PKG_NAME"), "ui");
 }
 
+#[test]
+fn ui_fixtures_match_registered_lints_and_have_no_unknown_lint_warnings() {
+    let ui_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("ui");
+    let lib_rs = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/lib.rs"),
+    )
+    .expect("lib.rs must be readable");
+
+    // Extract registered lint names
+    let start_marker = "lint_store.register_lints(&[";
+    let start = lib_rs
+        .find(start_marker)
+        .expect("register_lints must exist in lib.rs");
+    let content_after = &lib_rs[start + start_marker.len()..];
+    let end = content_after
+        .find("]);")
+        .expect("end of register_lints must exist");
+    let registered_names: std::collections::HashSet<String> = content_after[..end]
+        .lines()
+        .map(|l| l.trim().trim_end_matches(',').to_lowercase())
+        .filter(|l| !l.is_empty() && !l.starts_with("//"))
+        .collect();
+
+    for entry in std::fs::read_dir(&ui_dir)
+        .expect("ui dir must exist")
+        .flatten()
+    {
+        let path = entry.path();
+        if path.extension().and_then(|ext| ext.to_str()) == Some("rs") {
+            let stem = path
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .expect("valid file stem");
+            if stem != "main" {
+                assert!(
+                    registered_names.contains(&stem.to_lowercase()),
+                    "UI fixture '{:?}' does not match any registered lint in register_lints",
+                    path
+                );
+            }
+        }
+        if path.extension().and_then(|ext| ext.to_str()) == Some("stderr") {
+            let content = std::fs::read_to_string(&path).expect("stderr must be readable");
+            assert!(
+                !content.contains("unknown lint:"),
+                "UI stderr '{:?}' contains unknown lint warning:\n{}",
+                path,
+                content
+            );
+        }
+    }
+}
+
 /// Benchmarks the read/write matching lookup backing
 /// [`STORAGE_WRITE_WITHOUT_READ`] — a `HashSet::contains` lookup (current)
 /// against the `Vec::iter().any()` scan it replaced — on synthetic data

@@ -4,22 +4,30 @@ This document provides a concise reference for all lints supported by **soroban-
 
 | Lint | Default Severity | Description | Docs |
 |------|------------------|-------------|------|
-| `soroban_storage_in_loop` | warn | Detects storage reads/writes inside loop bodies. | [Link](lints/soroban_storage_in_loop.md) |
-| `storage_write_without_read` | warn | Flags storage writes without a corresponding read. | [Link](lints/storage_write_without_read.md) |
-| `map_insert_in_loop` | warn | Identifies `Map::insert` calls inside loops. | [Link](lints/map_insert_in_loop.md) |
-| `unnecessary_host_function_call` | warn | Flags repeated host function calls inside loops when inputs unchanged. | [Link](lints/unnecessary_host_function_call.md) |
-| `signature_verification_in_loop` | warn | Detects cryptographic verification calls inside loops. | [Link](lints/signature_verification_in_loop.md) |
-| `redundant_env_clone` | warn | Unnecessary `.clone()` calls on the `Env` object. | [Link](lints/redundant_env_clone.md) |
-| `inefficient_bytes_concat` | warn | Repeated `Bytes` concatenation in loops causing allocations. | [Link](lints/inefficient_bytes_concat.md) |
-| `bytes_append_in_loop` | warn | Growth-method calls on `Bytes`/`Vec`/`Map` inside loops. | [Link](lints/bytes_append_in_loop.md) |
-| `excessive_vec_capacity` | warn | Large, hard‑coded capacity in `Vec::with_capacity`/`.reserve`. | [Link](lints/excessive_vec_capacity.md) |
-| `vec_where_slice_could_be_used` | warn | Uses `Vec` by value where a slice would suffice. | [Link](lints/vec_where_slice_could_be_used.md) |
-| `symbol_new_for_short_literal` | warn | `Symbol::new` with short literal arguments. | [Link](lints/symbol_new_for_short_literal.md) |
-| `storage_key_construction_in_loop` | warn | Loop‑invariant `Symbol::new` key construction inside loops. | [Link](lints/storage_key_construction_in_loop.md) |
-| `host_in_loop` | warn | Detects host functions called inside loops unnecessarily. | [Link](lints/host_in_loop.md) |
-| `collection_len_in_loop_condition` | warn | Recalculates collection length in loop condition each iteration. | [Link](lints/collection_len_in_loop_condition.md) |
-| `discarded_storage_read` | warn | Reads from storage whose result is never used. | [Link](lints/discarded_storage_read.md) |
-| `redundant_val_conversion` | warn | Redundant conversions of values that are already in the correct type. | [Link](lints/redundant_val_conversion.md) |
-| `unnecessary_string_to_bytes` | warn | Unnecessary conversion from `String` to `Bytes`. | [Link](lints/unnecessary_string_to_bytes.md) |
+| `soroban_storage_in_loop` | warn | storage operations inside a loop | [Link](lints/soroban_storage_in_loop.md) |
+| `loop_invariant_storage_access` | warn | storage operation inside a loop whose operands are provably loop-invariant | [Link](lints/loop_invariant_storage_access.md) |
+| `soroban_redundant_storage_read` | warn | multiple sequential reads of the same storage key without modification | [Link](lints/soroban_redundant_storage_read.md) |
+| `storage_write_without_read` | warn | storage write without a corresponding read | [Link](lints/storage_write_without_read.md) |
+| `instance_storage_for_unbounded_data` | warn | unbounded collection written to instance storage | [Link](lints/instance_storage_for_unbounded_data.md) |
+| `unnecessary_host_function_call` | warn | unnecessary host function call inside loop | [Link](lints/unnecessary_host_function_call.md) |
+| `host_in_loop` | warn | use of Host object inside a loop | [Link](lints/host_in_loop.md) |
+| `contract_call_in_loop` | warn | cross-contract invocation inside a loop | [Link](lints/contract_call_in_loop.md) |
+| `unbounded_input_loop` | warn | loop bound derived from untrusted input with storage write in body | [Link](lints/unbounded_input_loop.md) |
+| `signature_verification_in_loop` | warn | signature verification performed inside a loop | [Link](lints/signature_verification_in_loop.md) |
+| `linear_scan_in_loop` | warn | linear scan on collection inside a loop — O(n²) cost | [Link](lints/linear_scan_in_loop.md) |
+| `require_auth_in_loop` | warn | Address::require_auth or require_auth_for_args called inside a loop | [Link](lints/require_auth_in_loop.md) |
+| `formatted_panic_payload` | warn | format!, formatted panic!, or expect(&format!(..)) pulls string-formatting machinery into a contract | [Link](lints/formatted_panic_payload.md) |
+| `unbounded_recursion` | warn | unbounded recursion driven by caller-supplied input | [Link](lints/unbounded_recursion.md) |
+| `soroban_inefficient_bytes_concat` | warn | inefficient Bytes concatenation inside a loop | [Link](lints/soroban_inefficient_bytes_concat.md) |
+| `redundant_env_clone` | warn | redundant clone on Env object | [Link](lints/redundant_env_clone.md) |
+| `bytes_append_in_loop` | warn | repeatedly growing SDK containers inside loops | [Link](lints/bytes_append_in_loop.md) |
+| `inefficient_bytes_concat` | warn | inefficient bytes concatenation | [Link](lints/inefficient_bytes_concat.md) |
+| `map_insert_in_loop` | warn | Map::insert called inside a loop | [Link](lints/map_insert_in_loop.md) |
+| `storage_key_construction_in_loop` | warn | storage key constructed inside a loop body where it could be hoisted | [Link](lints/storage_key_construction_in_loop.md) |
+| `vec_where_slice_could_be_used` | warn | soroban_sdk::Vec passed by value where a native Rust slice would suffice | [Link](lints/vec_where_slice_could_be_used.md) |
+| `extend_ttl_in_loop` | warn | extend_ttl called inside a loop | [Link](lints/extend_ttl_in_loop.md) |
+| `persistent_read_without_ttl_extension` | warn | persistent storage read without TTL extension — archival cost cliff | [Link](lints/persistent_read_without_ttl_extension.md) |
+| `symbol_new_for_short_literal` | warn | Symbol::new used with a short literal that could use symbol_short! macro | [Link](lints/symbol_new_for_short_literal.md) |
+| `unnecessary_string_to_bytes` | warn | unnecessary conversion from String to Bytes | [Link](lints/unnecessary_string_to_bytes.md) |
 
 *Severities can be overridden via `budget.toml`.*

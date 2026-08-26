@@ -20,8 +20,16 @@ fn parse_lib_rs(content: &str) -> Vec<LintEntry> {
         let trimmed = lines[i].trim();
         if trimmed.contains("declare_lint!") && trimmed.ends_with('{') {
             i += 1;
-            while i < lines.len() && lines[i].trim().is_empty() {
+            while i < lines.len()
+                && (lines[i].trim().is_empty()
+                    || lines[i].trim().starts_with("///")
+                    || lines[i].trim().starts_with("//")
+                    || lines[i].trim().starts_with("#["))
+            {
                 i += 1;
+            }
+            if i >= lines.len() {
+                break;
             }
             let name_line = lines[i].trim();
             if !name_line.starts_with("pub ") {

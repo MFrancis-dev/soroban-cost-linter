@@ -49,6 +49,13 @@
     "name": "host_in_loop"
   },
   {
+    "category": "Memory",
+    "default_level": "warn",
+    "description": "unnecessary String to Bytes conversion",
+    "docs_path": "docs/lints/unnecessary_string_to_bytes.md",
+    "name": "unnecessary_string_to_bytes"
+  },
+  {
     "category": "Compute",
     "default_level": "warn",
     "description": "cross-contract invocation inside a loop",

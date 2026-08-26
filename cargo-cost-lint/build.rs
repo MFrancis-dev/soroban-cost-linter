@@ -226,6 +226,24 @@ fn run() -> Result<()> {
         );
     }
 
+    // --- Verify no orphaned docs/lints/*.md exist without a registered lint ---
+    if let Ok(read_dir) = fs::read_dir(docs_dir) {
+        for entry in read_dir.flatten() {
+            let path = entry.path();
+            if path.extension().and_then(|ext| ext.to_str()) == Some("md")
+                && let Some(stem) = path.file_stem().and_then(|s| s.to_str())
+                && stem != "README"
+            {
+                assert!(
+                    names.contains(&stem.to_lowercase()),
+                    "doc file '{:?}' exists in docs/lints/ but lint '{}' is not registered in register_lints",
+                    path,
+                    stem
+                );
+            }
+        }
+    }
+
     // --- Read each doc file and embed as raw string literals ---
     let mut explanations: Vec<(String, String)> = Vec::new();
     for name in &names {
